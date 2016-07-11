@@ -1,0 +1,29 @@
+﻿@model List<string>
+@{
+    ViewBag.Title = "Главная";
+}
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-5">
+            @using (Html.BeginForm("CurrentWeather", "Home", FormMethod.Post))
+            {
+                @Html.Label("Выберете город из списка:")
+                @Html.DropDownList("cityName", new SelectList(Model), new { @class = "form-control" })
+                <input type="submit" name="button" value="Узнать погоду" class="btn btn-default" />
+            }
+        </div>
+        <div class="col-md-2">
+            или
+        </div>
+        <div class="col-md-5">
+            @using (Html.BeginForm("CurrentWeather", "Home", FormMethod.Post))
+            {
+                @Html.Label("Введите его название:")
+                @Html.TextBox("cityName", "", new { @class = "form-control" })
+                <input type="submit" value="Узнать погоду" class="btn btn-default" />
+            }
+        </div>
+    </div>
+</div>
+
+

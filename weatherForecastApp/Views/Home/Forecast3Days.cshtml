@@ -1,0 +1,69 @@
+﻿@model weatherForecastApp.Models.WeatherForecast3DaysDetailed
+
+@{
+    ViewBag.Title = "Прогноз на 3 дня";
+}
+<div class="btn-group btn-group-justified">
+    @Html.ActionLink("Погода сегодня", "CurrentWeather", new { cityName = @Model.city.name }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Прогноз на 3 дня", "Forecast3Days", new { cityName = @Model.city.name }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Прогноз на неделю", "Forecast7Days", new { cityName = @Model.city.name }, new { @class = "btn btn-primary" })
+</div>
+<h1>@Model.city.name</h1>
+<p>@Html.ActionLink("Выбрать другой город", "Index")</p>
+<h3>Подробный прогноз на 3 дня:</h3>
+<h4>@ConvertDate(@Model.Forecasts3Hours[0].dt)</h4>
+
+@{
+    string date =  @Model.Forecasts3Hours[0].dt_txt.Substring(8,2);
+    }
+
+
+
+    @foreach (var item in @Model.Forecasts3Hours)
+    {
+        if (date != @item.dt_txt.Substring(8, 2))
+        {
+            <h4>@ConvertDate(@item.dt)</h4>
+        }
+        
+        <table class="table">
+
+            <tr>
+                <td>
+                    @item.dt_txt.Substring(11, 5)
+                    <br><img src="@String.Format("http://openweathermap.org/img/w/{0}.png", item.weather[0].icon)" alt="@item.weather[0].description" width="50" height="50">
+                </td>
+                <td>
+                    Температура: @System.Math.Round(item.main.temp, 1) &degC, @item.weather[0].description, Ветер @WindDir(@item.wind.deg), скорость @item.wind.speed м/с
+                    <br>
+                    <dl class="dl-horizontal">
+                        <dt>Облачность:</dt>
+                        <dd>@item.clouds.all %</dd>
+                        <dt>Влажность:</dt>
+                        <dd>@item.main.humidity %</dd>
+                        <dt>Давление:</dt>
+                        <dd>@item.main.pressure гПа</dd>
+                    </dl>
+                </td>
+            </tr>
+           @{  date = item.dt_txt.Substring(8, 2); }
+        </table>
+
+    }
+
+
+
+
+    @helper WindDir(double windDeg)
+{
+    string[] windDirections = { "северный", "северный, северо-восточный", "северо-восточный", "восточный, северо-восточный", "восточный", "восточный, юго-восточный", "юго-восточный", "южный, юго-восточный", "южный", "южный, юго-западный", "юго-западный", "западный, юго-западный", "западный", "западный, северо-западный", "северо-западный", "северный, северо-западный" };
+    @windDirections[(int)Math.Round((windDeg - 11.25) / 22.5)];
+}
+    @helper ConvertDate(int posix)
+{
+    System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+    dtDateTime = dtDateTime.AddSeconds(posix);
+    @dtDateTime.ToShortDateString();
+}
+
+
