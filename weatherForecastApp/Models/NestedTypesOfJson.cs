@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace weatherForecastApp.Models
 {
@@ -49,10 +49,14 @@ namespace weatherForecastApp.Models
 
     public class City
     {
-        public int id { get; set; }
+        [JsonProperty("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int CityId { get; set; }
         public string name { get; set; }
+        [NotMapped]
         public Coord coord { get; set; }
         public string country { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 
     public class Temp

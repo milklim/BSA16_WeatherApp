@@ -18,7 +18,7 @@ namespace weatherForecastApp.Controllers
         public ActionResult Index(string cityName)
         {
             List<string> cities = new List<string> { "Днепропетровск", "Киев", "Львов", "Одесса", "Харьков" };
-            ViewBag.cityList = cities; ;
+            ViewBag.cityList = cities;
             return View(cities);
         }
 
