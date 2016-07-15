@@ -1,28 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Data.Entity;
 using weatherForecastApp.Models;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace weatherForecastApp.Infrastructure
 {
-    public class UserContextIntializer : DropCreateDatabaseAlways<UserContext>
+    public class UserContextIntializer : DropCreateDatabaseIfModelChanges<UserContext> 
     {
         protected override void Seed(UserContext context)
         {
-            City newCity = new Models.City
+            string path = string.Format("{0}{1}", AppDomain.CurrentDomain.BaseDirectory, "App_Data\\city.list.UA.json");
+
+            if (File.Exists(path))
             {
-                CityId = 702550,
-                name = "Lviv",
-                country = "UA"
+                foreach (string line in File.ReadLines(path))
+                {
+                    context.Cities.Add(JsonConvert.DeserializeObject<City>(line));
+                }
 
-            };
-            User newUser = new User();
-            newUser.FavorCities.Add(newCity);
-
-            context.Cities.Add(newCity);
-            context.Users.Add(newUser);
+            }
             context.SaveChanges();
         }
     }

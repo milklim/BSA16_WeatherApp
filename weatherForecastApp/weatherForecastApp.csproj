@@ -138,6 +138,7 @@
     <Compile Include="App_Start\NinjectWebCommon.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -199,6 +200,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Forecast3Days.cshtml" />
     <Content Include="Views\Home\Forecast7Days.cshtml" />
+    <Content Include="Views\Users\Favorites.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
 
+
 namespace weatherForecastApp.Models
 {
     public class Weather
@@ -49,8 +50,8 @@ namespace weatherForecastApp.Models
 
     public class City
     {
-        [JsonProperty("id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+       [JsonProperty("id")]
+       [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int CityId { get; set; }
         public string name { get; set; }
         [NotMapped]

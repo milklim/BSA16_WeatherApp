@@ -9,7 +9,7 @@
     @Html.ActionLink("Прогноз на неделю", "Forecast7Days", new { cityName = @Model.name }, new { @class = "btn btn-primary" })
 </div>
 <h1>@Model.name</h1>
-<p>@Html.ActionLink("Выбрать другой город", "Index")</p>
+<p>@Html.ActionLink("Добавить в избранное", "Favorites", "Users",new { cityId = Model.id }, new { @class = "text-muted" })  @Html.ActionLink("Выбрать другой город", "Index")</p>
 <h3>Сейчас за окном:</h3>
 <h4>@ConvertDate(@Model.dt)</h4>
 <table class="table">
