@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using weatherForecastApp.Infrastructure;
 using weatherForecastApp.Models;
@@ -17,9 +16,24 @@ namespace weatherForecastApp.Controllers
         private IRequestSender requestSender { get; set; }
         private UserContext db = new UserContext();
 
+        public ActionResult ViewFavorites()
+        {
+            User currUser = (Request.Cookies["UserId"] != null) ? db.Users.Find(Guid.Parse(Request.Cookies["UserId"].Value)) : null;
+            if (currUser == null)
+            {
+                currUser = new User();
+                db.Users.Add(currUser);
+                db.SaveChanges();
 
+                Response.Cookies["UserId"].Value = currUser.UserId.ToString();
+                Response.Cookies["UserId"].Expires = DateTime.Now.AddMonths(6);
+            }
 
-        public ActionResult Favorites(int cityId)
+            List<City> Favorites = new List<City>(db.Users.Find(currUser.UserId).FavorCities);
+            return View(Favorites);
+        }
+
+        public ActionResult AddToFavorites(int cityId)
         {
             City favorCity = db.Cities.Find(cityId); 
             if (favorCity == null)
@@ -37,22 +51,43 @@ namespace weatherForecastApp.Controllers
             if (currUser != null)
             {
                 currUser.FavorCities.Add(favorCity);
+                db.SaveChanges();
             }
             else
             {
                 currUser = new User();
                 currUser.FavorCities.Add(favorCity);
                 db.Users.Add(currUser);
+                db.SaveChanges();
+
                 Response.Cookies["UserId"].Value = currUser.UserId.ToString();
                 Response.Cookies["UserId"].Expires = DateTime.Now.AddMonths(6);
             }
-            db.SaveChanges();
 
-
-            List<City> Favorites = new List<City>(db.Users.Find(currUser.UserId).FavorCities);
-            return View(Favorites);
+            return RedirectToAction("ViewFavorites");
         }
 
+        public ActionResult Stats()
+        {
+            IEnumerable<History> history;
+            if (Request.Cookies["UserId"] != null)
+            {
+                var guid = Guid.Parse(Request.Cookies["UserId"].Value);
+                 history = db.History.Include(o => o.city).Where<History>(c => c.UserId == guid); 
+            }
+            else
+            {
+                 history = new List<History>();
+            }
+            return View(history);
+        }
+
+        public ActionResult Delete(int CityId)
+        {
+            var query = @"DELETE FROM [UserCities] WHERE User_UserId = {0} AND City_CityId = {1}";
+            db.Database.ExecuteSqlCommand(query, Guid.Parse(Request.Cookies["UserId"].Value), CityId);
+            return RedirectToAction("ViewFavorites");
+        }
 
 
 

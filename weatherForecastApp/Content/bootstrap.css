@@ -5274,6 +5274,7 @@ a.thumbnail:focus {
 
 .list-group-item > .badge {
   float: right;
+  font-size: 13px;
 }
 
 .list-group-item > .badge + .badge {

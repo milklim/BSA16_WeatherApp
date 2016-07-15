@@ -17,6 +17,8 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Погода", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Избранное", "ViewFavorites", "Users")</li>
+                    <li>@Html.ActionLink("Статистика", "Stats", "Users")</li>
                     <li>@Html.ActionLink("О проекте", "About", "Home")</li>
                     <li>@Html.ActionLink("Контакты", "Contact", "Home")</li>
                 </ul>
@@ -24,6 +26,7 @@
         </div>
     </div>
     <div class="container body-content">
+        @RenderSection("SearchForm", false)
         @RenderBody()
         <hr />
         <footer>

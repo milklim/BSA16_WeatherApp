@@ -1,29 +1,40 @@
-﻿@model weatherForecastApp.Models.CurrentWeather
+﻿
+@model weatherForecastApp.Models.CurrentWeather
 
 @{
     ViewBag.Title = "Погода за окном";
 }
-<div class="btn-group btn-group-justified">
-    @Html.ActionLink("Погода сегодня", "CurrentWeather", new { cityName = @Model.name }, new { @class = "btn btn-primary" })
-    @Html.ActionLink("Прогноз на 3 дня", "Forecast3Days", new { cityName = @Model.name }, new { @class = "btn btn-primary" })
-    @Html.ActionLink("Прогноз на неделю", "Forecast7Days", new { cityName = @Model.name }, new { @class = "btn btn-primary" })
-</div>
+
+@section SearchForm{
+    @Html.Partial("_SearchForm")
+    <div class="btn-group btn-group-justified">
+        @Html.ActionLink("Погода сегодня", "CurrentWeather", new { cityName = @Model.name }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Прогноз на 3 дня", "Forecast3Days", new { cityName = @Model.name }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Прогноз на неделю", "Forecast7Days", new { cityName = @Model.name }, new { @class = "btn btn-primary" })
+    </div>
+}
 <h1>@Model.name</h1>
-<p>@Html.ActionLink("Добавить в избранное", "Favorites", "Users",new { cityId = Model.id }, new { @class = "text-muted" })  @Html.ActionLink("Выбрать другой город", "Index")</p>
+<span>
+    <img src="~/Content/star.png" alt="В избранное" />
+     @Html.ActionLink("Добавить в избранное", "AddToFavorites", "Users", new { cityId = Model.id }, new { @class = "text-muted" }) 
+</span>
 <h3>Сейчас за окном:</h3>
 <h4>@ConvertDate(@Model.dt)</h4>
 <table class="table">
-    <tr class="text-center">
-        <th><img src="@String.Format("http://openweathermap.org/img/w/{0}.png", Model.weather[0].icon)" alt="@Model.weather[0].description" width="50" height="50"></th>
-        <th>Температура: @System.Math.Round(Model.main.temp, 1) &degC, @Model.weather[0].description, Ветер @WindDir(@Model.wind.deg), скорость @Model.wind.speed м/с
-                        <br>
-                        <dl class="dl-horizontal">
-                            <dt>Облачность:</dt> <dd>@Model.clouds.all %</dd>
-                            <dt>Влажность:</dt> <dd>@Model.main.humidity %</dd>
-                            <dt>Давление:</dt> <dd>@Model.main.pressure гПа</dd>
-                        </dl>
-        </th>
-
+    <tr>
+        <td><img src="@String.Format("http://openweathermap.org/img/w/{0}.png", Model.weather[0].icon)" alt="@Model.weather[0].description" width="50" height="50"></td>
+        <td>
+            Температура: @System.Math.Round(Model.main.temp, 1) &degC, @Model.weather[0].description, Ветер @WindDir(@Model.wind.deg), скорость @Model.wind.speed м/с
+            <br>
+            <dl class="dl-horizontal">
+                <dt>Облачность:</dt>
+                <dd>@Model.clouds.all %</dd>
+                <dt>Влажность:</dt>
+                <dd>@Model.main.humidity %</dd>
+                <dt>Давление:</dt>
+                <dd>@Model.main.pressure гПа</dd>
+            </dl>
+        </td>
     </tr>
 
 </table>
@@ -34,15 +45,15 @@
 
 @helper WindDir(double windDeg)
 {
-    string[] windDirections = { "северный", "северный, северо-восточный", "северо-восточный", "восточный, северо-восточный", "восточный", "восточный, юго-восточный", "юго-восточный", "южный, юго-восточный", "южный", "южный, юго-западный", "юго-западный", "западный, юго-западный", "западный", "западный, северо-западный", "северо-западный", "северный, северо-западный" };
+string[] windDirections = { "северный", "северный, северо-восточный", "северо-восточный", "восточный, северо-восточный", "восточный", "восточный, юго-восточный", "юго-восточный", "южный, юго-восточный", "южный", "южный, юго-западный", "юго-западный", "западный, юго-западный", "западный", "западный, северо-западный", "северо-западный", "северный, северо-западный" };
     @windDirections[(int)((windDeg - 11.25) / 22.5)];
 }
 @helper ConvertDate(int posix)
 {
-    System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-    dtDateTime = dtDateTime.AddSeconds(posix).ToLocalTime();
+System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+dtDateTime = dtDateTime.AddSeconds(posix).ToLocalTime();
     @dtDateTime.ToShortDateString();
 }
-    
+
 
 

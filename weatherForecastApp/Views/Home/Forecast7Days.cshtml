@@ -3,13 +3,23 @@
 @{
     ViewBag.Title = "Прогноз на 7 дней";
 }
-<div class="btn-group btn-group-justified">
-    @Html.ActionLink("Погода сегодня", "CurrentWeather", new { cityName = @Model.city.name }, new { @class = "btn btn-primary" })
-    @Html.ActionLink("Прогноз на 3 дня", "Forecast3Days", new { cityName = @Model.city.name }, new { @class = "btn btn-primary" })
-    @Html.ActionLink("Прогноз на неделю", "Forecast7Days", new { cityName = @Model.city.name }, new { @class = "btn btn-primary" })
-</div>
+
+@section SearchForm { 
+     @Html.Partial("_SearchForm")     
+    <div class="btn-group btn-group-justified">
+        @Html.ActionLink("Погода сегодня", "CurrentWeather", new { cityName = @Model.city.name }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Прогноз на 3 дня", "Forecast3Days", new { cityName = @Model.city.name }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Прогноз на неделю", "Forecast7Days", new { cityName = @Model.city.name }, new { @class = "btn btn-primary" })
+    </div>
+}
+
+
+
 <h1>@Model.city.name</h1>
-<p>@Html.ActionLink("Выбрать другой город", "Index")</p>
+<span>
+    <img src="~/Content/star.png" alt="В избранное" />
+    @Html.ActionLink("Добавить в избранное", "AddToFavorites", "Users", new { cityId = Model.city.CityId }, new { @class = "text-muted" })
+</span>
 <h3>Прогноз на неделю:</h3>
 
 

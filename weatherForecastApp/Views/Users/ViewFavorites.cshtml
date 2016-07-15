@@ -1,0 +1,17 @@
+﻿@model IEnumerable<weatherForecastApp.Models.City>
+
+
+@{
+    ViewBag.Title = "Избранное";
+}
+
+<h1>Избранные места:</h1>
+<ul class="list-group">
+    @foreach (var item in Model)
+    {
+        <li class="list-group-item"><span class="badge">@Html.ActionLink("delete", "Delete", new { CityId = item.CityId })</span> @item.name</li>
+    }
+</ul>   
+
+
+

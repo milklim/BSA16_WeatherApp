@@ -1,0 +1,14 @@
+﻿@model IEnumerable<weatherForecastApp.Models.History>
+
+@{
+    ViewBag.Title = "Статистика";
+}
+
+<h1>Вы просматривали:</h1>
+<ul class="list-group">
+    @foreach (var item in Model)
+    {
+        <li class="list-group-item"> @item.Date   -   @item.city.name</li>
+    }
+</ul>   
+

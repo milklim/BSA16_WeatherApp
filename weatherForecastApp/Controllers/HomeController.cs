@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
+using weatherForecastApp.Infrastructure;
 using weatherForecastApp.Models;
 using weatherForecastApp.Services;
 
@@ -8,23 +10,27 @@ namespace weatherForecastApp.Controllers
     public class HomeController : Controller
     {
         private IWeatherService wService;
-        const string defaultCity = "Lviv";
+        private UserContext db = new UserContext();
+        const string defaultCity = "Kiev";
         public HomeController(IWeatherService wServiceParam)
         {
             wService = wServiceParam;
         }
 
 
-        public ActionResult Index(string cityName)
+        public ActionResult Index()
         {
-            List<string> cities = new List<string> { "Днепропетровск", "Киев", "Львов", "Одесса", "Харьков" };
-            ViewBag.cityList = cities;
-            return View(cities);
+            return View();
         }
 
         public ActionResult CurrentWeather(string cityName = defaultCity)
         {
             CurrentWeather wView = wService.GetForecast(cityName, TypeOfForecast.CurrentWeather) as CurrentWeather;
+            if (Request.Cookies["UserId"] != null)
+            {
+                var query = "INSERT INTO [Histories] (UserId, CityId, Date) VALUES ({0}, {1}, {2})";
+                db.Database.ExecuteSqlCommand(query, Guid.Parse(Request.Cookies["UserId"].Value), wView.id, DateTime.Now);
+            }
             return View(wView);
         }
 
@@ -45,8 +51,8 @@ namespace weatherForecastApp.Controllers
         [HttpPost]
         public ActionResult PostRequestHandler(string cityName)
         {
-            if (cityName == "") RedirectToAction("Index");
-            return RedirectToAction("CurrentWeather", cityName);
+            if (cityName  == string.Empty) return RedirectToAction("Index");
+            return RedirectToAction("CurrentWeather", new { cityName = cityName });
         }
 
         public ActionResult About()
