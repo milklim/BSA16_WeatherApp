@@ -5,6 +5,10 @@
 }
 
 <h1>Вы просматривали:</h1>
+<span>
+    <img src="~/Content/trash.png" alt="Очистить" />
+    @Html.ActionLink("Очистить историю", "ClearHistory", new { }, new { @class = "text-danger" })
+</span>
 <ul class="list-group">
     @foreach (var item in Model)
     {

@@ -22,3 +22,15 @@ select,
 textarea {
     max-width: 280px;
 }
+a:link.delbutton {
+    color: #033353;
+}
+a:visited.delbutton {
+    color: #033353;
+}
+a:hover.delbutton {
+   color: red;
+}
+a:active.delbutton {
+   color: #ca5100;
+}

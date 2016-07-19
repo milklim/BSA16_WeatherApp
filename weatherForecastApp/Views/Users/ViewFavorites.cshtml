@@ -9,9 +9,12 @@
 <ul class="list-group">
     @foreach (var item in Model)
     {
-        <li class="list-group-item"><span class="badge">@Html.ActionLink("delete", "Delete", new { CityId = item.CityId })</span> @item.name</li>
+        <li class="list-group-item">
+            <span class="badge">
+                @Html.ActionLink("delete", "DeleteFromFavorites", new { CityId = item.CityId }, new { @class="delbutton" })
+            </span>
+            @*Html.ActionLink( "@item.name", "CurrentWeather", "Home", new { CityId = item.CityId })*@
+            @Html.ActionLink( @item.name, "CurrentWeather", "Home", new { cityName = item.name}, new {})
+        </li>
     }
-</ul>   
-
-
-
+</ul>

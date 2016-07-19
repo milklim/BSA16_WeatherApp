@@ -26,11 +26,7 @@ namespace weatherForecastApp.Controllers
         public ActionResult CurrentWeather(string cityName = defaultCity)
         {
             CurrentWeather wView = wService.GetForecast(cityName, TypeOfForecast.CurrentWeather) as CurrentWeather;
-            if (Request.Cookies["UserId"] != null)
-            {
-                var query = "INSERT INTO [Histories] (UserId, CityId, Date) VALUES ({0}, {1}, {2})";
-                db.Database.ExecuteSqlCommand(query, Guid.Parse(Request.Cookies["UserId"].Value), wView.id, DateTime.Now);
-            }
+            WriteHistory(wView.id);
             return View(wView);
         }
 
@@ -63,6 +59,33 @@ namespace weatherForecastApp.Controllers
         public ActionResult Contact()
         {
             return View();
+        }
+
+        private void WriteHistory(int cityId)
+        {
+            User currUser = (Request.Cookies["UserId"] != null) ? db.Users.Find(Guid.Parse(Request.Cookies["UserId"].Value)) : null;
+            if (currUser == null)
+            {
+                currUser = new User();
+                db.Users.Add(currUser);
+                db.SaveChanges();
+
+                Response.Cookies["UserId"].Value = currUser.UserId.ToString();
+                Response.Cookies["UserId"].Expires = DateTime.Now.AddMonths(6);
+            }
+
+            var query = "INSERT INTO [Histories] (UserId, CityId, Date) VALUES ({0}, {1}, {2})";
+            db.Database.ExecuteSqlCommand(query, currUser.UserId, cityId, DateTime.Now);
+
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

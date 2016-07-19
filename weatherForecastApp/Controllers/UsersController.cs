@@ -18,18 +18,8 @@ namespace weatherForecastApp.Controllers
 
         public ActionResult ViewFavorites()
         {
-            User currUser = (Request.Cookies["UserId"] != null) ? db.Users.Find(Guid.Parse(Request.Cookies["UserId"].Value)) : null;
-            if (currUser == null)
-            {
-                currUser = new User();
-                db.Users.Add(currUser);
-                db.SaveChanges();
-
-                Response.Cookies["UserId"].Value = currUser.UserId.ToString();
-                Response.Cookies["UserId"].Expires = DateTime.Now.AddMonths(6);
-            }
-
-            List<City> Favorites = new List<City>(db.Users.Find(currUser.UserId).FavorCities);
+            User user = GetUser();
+            List<City> Favorites = new List<City>(db.Users.Find(user.UserId).FavorCities);
             return View(Favorites);
         }
 
@@ -47,16 +37,43 @@ namespace weatherForecastApp.Controllers
             }
 
 
+            User currUser = GetUser();
+            currUser.FavorCities.Add(favorCity);
+            db.SaveChanges();
+
+            return RedirectToAction("ViewFavorites");
+        }
+
+        public ActionResult Stats()
+        {
+            User user = GetUser();
+            IEnumerable<History> history = db.History.Include(o => o.city).Where<History>(c => c.UserId == user.UserId);
+
+            return View(history);
+        }
+
+        public ActionResult DeleteFromFavorites(int CityId)
+        {
+            var query = @"DELETE FROM [UserCities] WHERE User_UserId = {0} AND City_CityId = {1}";
+            db.Database.ExecuteSqlCommand(query, Guid.Parse(Request.Cookies["UserId"].Value), CityId);
+            return RedirectToAction("ViewFavorites");
+        }
+
+        public ActionResult ClearHistory()
+        {
+            User user = GetUser(); 
+            var query = @"DELETE FROM [Histories] WHERE UserId = {0}";
+            db.Database.ExecuteSqlCommand(query, user.UserId);
+
+            return View("Stats", new List<History>());
+        }
+
+        private User GetUser()
+        {
             User currUser = (Request.Cookies["UserId"] != null) ? db.Users.Find(Guid.Parse(Request.Cookies["UserId"].Value)) : null;
-            if (currUser != null)
-            {
-                currUser.FavorCities.Add(favorCity);
-                db.SaveChanges();
-            }
-            else
+            if (currUser == null)
             {
                 currUser = new User();
-                currUser.FavorCities.Add(favorCity);
                 db.Users.Add(currUser);
                 db.SaveChanges();
 
@@ -64,32 +81,8 @@ namespace weatherForecastApp.Controllers
                 Response.Cookies["UserId"].Expires = DateTime.Now.AddMonths(6);
             }
 
-            return RedirectToAction("ViewFavorites");
+            return currUser;
         }
-
-        public ActionResult Stats()
-        {
-            IEnumerable<History> history;
-            if (Request.Cookies["UserId"] != null)
-            {
-                var guid = Guid.Parse(Request.Cookies["UserId"].Value);
-                 history = db.History.Include(o => o.city).Where<History>(c => c.UserId == guid); 
-            }
-            else
-            {
-                 history = new List<History>();
-            }
-            return View(history);
-        }
-
-        public ActionResult Delete(int CityId)
-        {
-            var query = @"DELETE FROM [UserCities] WHERE User_UserId = {0} AND City_CityId = {1}";
-            db.Database.ExecuteSqlCommand(query, Guid.Parse(Request.Cookies["UserId"].Value), CityId);
-            return RedirectToAction("ViewFavorites");
-        }
-
-
 
         protected override void Dispose(bool disposing)
         {
