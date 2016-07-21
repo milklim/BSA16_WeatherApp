@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace weatherForecastApp.Models
 {
     // Root object of JSON (request ""http://api.openweathermap.org/data/2.5/forecast? . . .")
-    public class WeatherForecast3DaysDetailed : IWeatherForecast3DaysDetailed
+    public class WeatherForecast3DaysDetailed
     {
         public City city { get; set; }
         public string cod { get; set; }

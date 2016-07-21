@@ -15,7 +15,7 @@
 
 
 
-<h1>@Model.city.name</h1>
+<h1>@Model.city.name, @Model.city.country</h1>
 <span>
     <img src="~/Content/star.png" alt="В избранное" />
     @Html.ActionLink("Добавить в избранное", "AddToFavorites", "Users", new { cityId = Model.city.CityId }, new { @class = "text-muted" })

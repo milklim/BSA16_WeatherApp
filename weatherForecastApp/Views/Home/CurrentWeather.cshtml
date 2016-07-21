@@ -13,7 +13,7 @@
         @Html.ActionLink("Прогноз на неделю", "Forecast7Days", new { cityName = @Model.name }, new { @class = "btn btn-primary" })
     </div>
 }
-<h1>@Model.name</h1>
+<h1>@Model.name, @Model.sys.country </h1>
 <span>
     <img src="~/Content/star.png" alt="В избранное" />
      @Html.ActionLink("Добавить в избранное", "AddToFavorites", "Users", new { cityId = Model.id }, new { @class = "text-muted" }) 

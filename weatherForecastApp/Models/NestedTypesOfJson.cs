@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace weatherForecastApp.Models
 {
@@ -53,6 +53,7 @@ namespace weatherForecastApp.Models
        [JsonProperty("id")]
        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int CityId { get; set; }
+        [Required]
         public string name { get; set; }
         [NotMapped]
         public Coord coord { get; set; }

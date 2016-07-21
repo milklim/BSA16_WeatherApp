@@ -4,7 +4,7 @@
 namespace weatherForecastApp.Models
 {
     // Root object of JSON (request "http://api.openweathermap.org/data/2.5/weather? . . .")
-    public class CurrentWeather : ICurrentWeather
+    public class CurrentWeather
     {
         public Coord coord { get; set; }
         public List<Weather> weather { get; set; }
