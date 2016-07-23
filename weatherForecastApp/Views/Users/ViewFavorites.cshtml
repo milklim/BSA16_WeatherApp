@@ -1,20 +1,25 @@
 ﻿@model IEnumerable<weatherForecastApp.Models.City>
 
-
 @{
     ViewBag.Title = "Избранное";
 }
-
 <h1>Избранные места:</h1>
-<ul class="list-group">
-    @foreach (var item in Model)
-    {
-        <li class="list-group-item">
-            <span class="badge">
-                @Html.ActionLink("delete", "DeleteFromFavorites", new { CityId = item.CityId }, new { @class="delbutton" })
-            </span>
-            @*Html.ActionLink( "@item.name", "CurrentWeather", "Home", new { CityId = item.CityId })*@
-            @Html.ActionLink( @item.name, "CurrentWeather", "Home", new { cityName = item.name}, new {})
-        </li>
-    }
-</ul>
+@if (Model.Count<City>() > 0)
+{
+    <ul class="list-group">
+        @foreach (var item in Model)
+        {
+            <li class="list-group-item">
+                <span class="badge">
+                    @Html.ActionLink("delete", "DeleteFromFavorites", new { cityId = item.CityId }, new { @class = "delbutton" })
+                </span>
+                @*Html.ActionLink( "@item.name", "CurrentWeather", "Home", new { CityId = item.CityId })*@
+                @Html.ActionLink(@item.name, "CurrentWeather", "Home", new { cityName = item.name }, new { })
+            </li>
+        }
+    </ul>
+}
+else   
+{
+    <h3 class="text-muted">В избранном ничего нет.</h3>
+}

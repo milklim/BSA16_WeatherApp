@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using weatherForecastApp.Infrastructure;
 using weatherForecastApp.Models;
-
+using weatherForecastApp.Services;
 
 namespace weatherForecastApp.Controllers
 {
@@ -14,62 +13,39 @@ namespace weatherForecastApp.Controllers
         private UserContext db = new UserContext();
 
 
-        public ActionResult ViewFavorites()
+        public async Task<ActionResult> ViewFavorites()
         {
-            User user = GetUser();
-            List<City> Favorites = new List<City>(db.Users.Find(user.UserId).FavorCities);
-            return View(Favorites.OrderBy(c => c.name));
+            User user = await DbAsyncHelper.GetUserAsync();
+            return View(user.FavorCities.OrderBy(c => c.name));
         }
 
 
-        public ActionResult AddToFavorites(int cityId)
+        public async Task<ActionResult> AddToFavorites(int cityId)
         {
-            City favorCity = db.Cities.Find(cityId); 
-            User currUser = GetUser();
-            currUser.FavorCities.Add(favorCity);
-            db.SaveChanges();
-            return RedirectToAction("ViewFavorites");
+            List<City> favorCities = await DbAsyncHelper.AddToFavoritesAsync(cityId);
+            return View("ViewFavorites", favorCities);
         }
 
-
-        public ActionResult Stats()
+        public async Task<ActionResult> Stats()
         {
-            User user = GetUser();
-            IEnumerable<History> history = db.History.Include(o => o.city).Where<History>(c => c.UserId == user.UserId);
+            List<History> history = await DbAsyncHelper.GetHistoryAsync();
             return View(history);
         }
 
 
-        public ActionResult DeleteFromFavorites(int CityId)
+        public async  Task<ActionResult> DeleteFromFavorites(int cityId)
         {
-            var query = @"DELETE FROM [UserCities] WHERE User_UserId = {0} AND City_CityId = {1}";
-            db.Database.ExecuteSqlCommand(query, Guid.Parse(Request.Cookies["UserId"].Value), CityId);
-            return RedirectToAction("ViewFavorites");
+            List<City> favorCities = await DbAsyncHelper.DeleteFromFavoritesAsync(cityId);
+            return View("ViewFavorites", favorCities);
         }
 
 
-        public ActionResult ClearHistory()
+        public async Task<ActionResult> ClearHistory()
         {
-            User user = GetUser(); 
-            var query = @"DELETE FROM [Histories] WHERE UserId = {0}";
-            db.Database.ExecuteSqlCommand(query, user.UserId);
+            await DbAsyncHelper.ClearHistoryAsync();
             return View("Stats", new List<History>());
         }
 
-
-        private User GetUser()
-        {
-            User currUser = (Request.Cookies["UserId"] != null) ? db.Users.Find(Guid.Parse(Request.Cookies["UserId"].Value)) : null;
-            if (currUser == null)
-            {
-                currUser = new User();
-                db.Users.Add(currUser);
-                db.SaveChanges();
-                Response.Cookies["UserId"].Value = currUser.UserId.ToString();
-                Response.Cookies["UserId"].Expires = DateTime.Now.AddMonths(6);
-            }
-            return currUser;
-        }
 
         protected override void Dispose(bool disposing)
         {

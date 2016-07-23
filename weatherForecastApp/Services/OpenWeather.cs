@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using weatherForecastApp.Models;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace weatherForecastApp.Services
 {
@@ -23,10 +22,18 @@ namespace weatherForecastApp.Services
 
         protected override string SendApiRequest<T>(string cityName)
         {
-            string queryString = String.Format("http://api.openweathermap.org/data/2.5/{0}?q={1}&type=like&units=metric&lang=ru&appid={2}", 
-                                                apiReqParams[typeof(T)] , cityName, appId);
+            string queryString = string.Format("http://api.openweathermap.org/data/2.5/{0}?q={1}&type=like&units=metric&lang=ru&appid={2}",
+                                                apiReqParams[typeof(T)], cityName, appId);
             string response = requestSender.SendRequest(queryString);
             return response;
+        }
+
+
+        protected async override Task<string> SendApiRequestAsync<T>(string cityName)
+        {
+            string queryString = string.Format("http://api.openweathermap.org/data/2.5/{0}?q={1}&type=like&units=metric&lang=ru&appid={2}", 
+                                                apiReqParams[typeof(T)] , cityName, appId);
+            return await requestSender.SendRequestAsync(queryString);
         }
 
         protected override T DeserializeResponse<T>(string response)

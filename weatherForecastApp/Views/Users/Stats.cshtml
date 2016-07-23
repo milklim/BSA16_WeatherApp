@@ -1,18 +1,23 @@
 ﻿@model IEnumerable<weatherForecastApp.Models.History>
-
 @{
     ViewBag.Title = "Статистика";
 }
-
 <h1>Вы просматривали:</h1>
-<span>
-    <img src="~/Content/trash.png" alt="Очистить" />
-    @Html.ActionLink("Очистить историю", "ClearHistory", new { }, new { @class = "text-danger" })
-</span>
-<ul class="list-group">
-    @foreach (var item in Model)
-    {
-        <li class="list-group-item"> @item.Date   -   @item.city.name</li>
-    }
-</ul>   
+@if (Model.Count<History>() == 0)
+{
+    <h3 class="text-muted">История просмотров пуста.</h3>
+}
+else
+{
+    <span>
+        <img src="~/Content/trash.png" alt="Очистить" />
+        @Html.ActionLink("Очистить историю", "ClearHistory", new { }, new { @class = "text-danger" })
+    </span>
+    <ul class="list-group">
+        @foreach (var item in Model)
+        {
+            <li class="list-group-item"> @item.Date   -   @item.city.name</li>
+        }
+    </ul>
+}
 

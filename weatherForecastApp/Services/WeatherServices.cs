@@ -1,5 +1,6 @@
 ﻿using Ninject;
 using System;
+using System.Threading.Tasks;
 using weatherForecastApp.Models;
 
 namespace weatherForecastApp.Services
@@ -22,7 +23,15 @@ namespace weatherForecastApp.Services
         }
 
 
+        public async Task<T> GetForecastAsync<T>(string cityName)
+        {
+            string response = await SendApiRequestAsync<T>(cityName);
+            return DeserializeResponse<T>(response);
+        }
+
+
         protected abstract string SendApiRequest<T>(string cityName);
+        protected abstract Task<string> SendApiRequestAsync<T>(string cityName);
         protected abstract T DeserializeResponse<T>(string response);
 
     }

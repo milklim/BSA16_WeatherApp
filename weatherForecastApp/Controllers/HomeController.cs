@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using weatherForecastApp.Infrastructure;
 using weatherForecastApp.Models;
@@ -24,24 +25,51 @@ namespace weatherForecastApp.Controllers
         }
 
 
-        public ActionResult CurrentWeather(string cityName = defaultCity)
+        public async Task<ActionResult> CurrentWeather(string cityName = defaultCity)
         {
-            CurrentWeather wView = wService.GetForecast<CurrentWeather>(cityName);
-            WriteHistory(wView);
+            CurrentWeather wView;
+            try
+            {
+                wView = await wService.GetForecastAsync<CurrentWeather>(cityName);
+            }
+            catch (HttpRequestException ex)
+            {
+                ViewBag.err = ex.Message;
+                return View("Error");
+            }
+            await DbAsyncHelper.WriteHistoryAsync(wView);
             return View(wView);
         }
 
 
-        public ActionResult Forecast3Days(string cityName = defaultCity)
+        public async Task<ActionResult> Forecast3Days(string cityName = defaultCity)
         {
-            WeatherForecast3DaysDetailed wView = wService.GetForecast<WeatherForecast3DaysDetailed>(cityName);
+            WeatherForecast3DaysDetailed wView;
+            try
+            {
+                wView = await wService.GetForecastAsync<WeatherForecast3DaysDetailed>(cityName);
+            }
+            catch (HttpRequestException ex)
+            {
+                ViewBag.err = ex.Message;
+                return View("Error");
+            }
             return View(wView);
         }
 
 
-        public ActionResult Forecast7Days(string cityName = defaultCity)
+        public async Task<ActionResult> Forecast7Days(string cityName = defaultCity)
         {
-            WeatherForecast7Days wView = wService.GetForecast<WeatherForecast7Days>(cityName);
+            WeatherForecast7Days wView;
+            try
+            {
+                wView = await wService.GetForecastAsync<WeatherForecast7Days>(cityName);
+            }
+            catch (HttpRequestException ex)
+            {
+                ViewBag.err = ex.Message;
+                return View("Error");
+            }
             return View(wView);
         }
 
@@ -49,7 +77,10 @@ namespace weatherForecastApp.Controllers
         [HttpPost]
         public ActionResult PostRequestHandler(string cityName)
         {
-            if (cityName  == string.Empty) return RedirectToAction("Index");
+            if (cityName == string.Empty)
+            {
+                return RedirectToAction("Index");
+            }
             return RedirectToAction("CurrentWeather", new { cityName = cityName });
         }
 
@@ -62,31 +93,6 @@ namespace weatherForecastApp.Controllers
         public ActionResult Contact()
         {
             return View();
-        }
-
-        private void WriteHistory(CurrentWeather forecast)
-        {
-            User currUser = (Request.Cookies["UserId"] != null) ? db.Users.Find(Guid.Parse(Request.Cookies["UserId"].Value)) : null;
-            if (currUser == null)
-            {
-                currUser = new User();
-                db.Users.Add(currUser);
-                db.SaveChanges();
-
-                Response.Cookies["UserId"].Value = currUser.UserId.ToString();
-                Response.Cookies["UserId"].Expires = DateTime.Now.AddMonths(6);
-            }
-
-            City favorCity = db.Cities.Find(forecast.id);
-            if (favorCity == null)
-            {
-                favorCity = new City() { CityId = forecast.id, name = forecast.name, country = forecast.sys.country };
-                db.Cities.Add(favorCity);
-                db.SaveChanges();
-            }
-
-            var query = "INSERT INTO [Histories] (UserId, CityId, Date) VALUES ({0}, {1}, {2})";
-            db.Database.ExecuteSqlCommand(query, currUser.UserId, favorCity.CityId, DateTime.Now);
         }
 
         protected override void Dispose(bool disposing)

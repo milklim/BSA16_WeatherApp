@@ -152,6 +152,7 @@
     <Compile Include="Models\WeatherForecast7Days.cs" />
     <Compile Include="Models\NestedTypesOfJson.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\DbAsyncHelper.cs" />
     <Compile Include="Services\IRequestSender.cs" />
     <Compile Include="Services\OpenWeather.cs" />
     <Compile Include="Services\RequestSender.cs" />
